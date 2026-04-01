@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: solestyle-backend
+    runtime: node
+    branch: main
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: MONGO_URI
+        value: mongodb+srv://E-commerce1:E-commerce1@cluster0.8cof4ps.mongodb.net/windsurf-gear?retryWrites=true&w=majority
+      - key: JWT_SECRET
+        value: windsurf_secret_key_2024_production
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: CLOUDINARY_CLOUD_NAME
+        value: your_cloud_name
+      - key: CLOUDINARY_API_KEY
+        value: your_api_key
+      - key: CLOUDINARY_API_SECRET
+        value: your_api_secret

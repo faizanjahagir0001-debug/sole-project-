@@ -1,0 +1,141 @@
+# ISSUE REPORT - Frontend/Backend Not Running
+
+## Problem Summary
+When running `npm run dev` in frontend, getting error:
+```
+'vite' is not recognized as an internal or external command
+```
+
+## Root Cause
+During cleanup, `node_modules` folders were removed from both:
+- `frontend/node_modules/`
+- `backend/node_modules/`
+
+These folders contain all dependencies (like vite, react, express, etc.).
+Without them, commands like `npm run dev` cannot work.
+
+## Current State
+
+### What Was Removed (During Cleanup)
+- ✅ `node_modules/` from frontend - REMOVED
+- ✅ `node_modules/` from backend - REMOVED
+- ✅ `dist/` build folders - REMOVED
+- ✅ Log files - REMOVED
+- ✅ .bat deployment scripts - REMOVED
+
+### What Remains
+- ✅ All source code files (src/, components/, pages/)
+- ✅ `package.json` (has dependency list)
+- ✅ Configuration files (vite.config.js, server.js)
+- ✅ Environment files (.env - locally kept)
+
+## The Error Explained
+
+### Frontend Error
+```
+> windsurf-gear-frontend@1.0.0 dev
+> vite
+
+'vite' is not recognized as an internal or external command,
+operable program or batch file.
+```
+
+**Why this happens:**
+- `package.json` has script: `"dev": "vite"`
+- This tries to run `vite` command
+- `vite` is installed in `node_modules/.bin/vite`
+- But `node_modules/` was deleted during cleanup
+- So Windows cannot find the `vite` command
+
+### Backend Would Have Similar Error
+If you try `npm start` or `node server.js` in backend:
+- Express, Mongoose, etc. would be missing
+- Would get "Cannot find module 'express'" error
+
+## Solution
+
+### Step 1: Reinstall Dependencies
+
+**Frontend:**
+```bash
+cd frontend
+npm install
+```
+This reads `package.json` and reinstalls:
+- vite (build tool)
+- react
+- react-router-dom
+- axios
+- tailwindcss
+- All other dependencies
+
+**Backend:**
+```bash
+cd backend
+npm install
+```
+This reinstalls:
+- express
+- mongoose
+- jsonwebtoken
+- bcryptjs
+- All other dependencies
+
+### Step 2: Then Run Servers
+
+**Terminal 1 (Backend):**
+```bash
+cd backend
+npm run dev
+# or: node server.js
+```
+
+**Terminal 2 (Frontend):**
+```bash
+cd frontend
+npm run dev
+```
+
+## For ChatGPT Discussion
+
+**You can ask ChatGPT:**
+
+"I'm getting error 'vite is not recognized' when running npm run dev in my React project. I recently cleaned up my project and removed node_modules folder. How do I fix this?"
+
+**Expected Answer:**
+"Run `npm install` to reinstall all dependencies. The node_modules folder contains all the packages listed in package.json, and without it, commands like 'vite' won't work."
+
+## Quick Fix Commands
+
+```bash
+# Fix everything
+cd "c:\Users\SHAYAN J\Desktop\WIndsurf-project\frontend"
+npm install
+
+cd "..\backend"
+npm install
+
+# Now run
+cd backend
+start cmd /k "npm run dev"
+
+cd ..\frontend
+start cmd /k "npm run dev"
+```
+
+## Prevention
+
+Never delete `node_modules` unless:
+1. You know you need to reinstall
+2. You're preparing for deployment (then add to .gitignore but keep locally)
+3. You're troubleshooting dependency issues
+
+## Summary
+- ❌ `node_modules/` was removed (during cleanup)
+- ❌ Dependencies missing (vite, express, etc.)
+- ✅ Solution: Run `npm install` in both frontend and backend
+- ✅ Then both servers will work
+
+---
+
+**Status:** Waiting for `npm install` to complete in both folders

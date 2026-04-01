@@ -1,0 +1,170 @@
+# CLEAN FOLDER STRUCTURE - SoleStyle E-Commerce
+
+## Root Directory
+```
+soleStyle-ecommerce/
+├── .git/                   # Git repository
+├── .gitignore             # Excludes node_modules, .env
+├── README.md              # Project documentation
+├── CLOUDINARY_GUIDE.txt   # Image upload guide
+├── COMPLETE_PROJECT_PROMPT.txt  # Full project description
+├── backend/               # Node.js/Express API
+└── frontend/              # React/Vite App
+```
+
+## Backend Structure
+```
+backend/
+├── config/
+│   └── db.js              # MongoDB connection
+├── controllers/
+│   ├── auth.js            # Login/register logic
+│   ├── cart.js            # Cart operations
+│   ├── contactController.js # Contact messages
+│   ├── orders.js          # Order management
+│   ├── products.js        # Product CRUD
+│   └── users.js           # User management
+├── middleware/
+│   └── auth.js            # JWT authentication
+├── models/
+│   ├── Cart.js            # Cart schema
+│   ├── ContactMessage.js  # Message schema
+│   ├── Order.js           # Order schema
+│   ├── Product.js         # Product schema
+│   └── User.js            # User schema
+├── routes/
+│   ├── auth.js            # Auth routes
+│   ├── cart.js            # Cart routes
+│   ├── contactRoutes.js   # Contact routes
+│   ├── orders.js          # Order routes
+│   ├── products.js        # Product routes
+│   └── users.js           # User routes
+├── .env                   # Environment variables (NOT in git)
+├── .env.example           # Example env file
+├── .env.production        # Production env config
+├── .gitignore             # Backend gitignore
+├── package.json           # Dependencies
+├── render.yaml            # Render deployment config
+└── server.js              # Main entry point
+```
+
+## Frontend Structure
+```
+frontend/
+├── public/
+│   └── index.html         # HTML template
+├── src/
+│   ├── components/        # Reusable UI components
+│   │   ├── BestSellers.jsx
+│   │   ├── CategorySection.jsx
+│   │   ├── FeaturedProducts.jsx
+│   │   ├── Footer.jsx
+│   │   ├── Hero.jsx
+│   │   ├── Navbar.jsx
+│   │   ├── ProductCard.jsx
+│   │   ├── PromoBanner.jsx
+│   │   ├── ProtectedRoute.jsx
+│   │   ├── AdminRoute.jsx
+│   │   └── Testimonials.jsx
+│   ├── context/           # React Context
+│   │   ├── AuthContext.jsx
+│   │   ├── CartContext.jsx
+│   │   └── ThemeContext.jsx
+│   ├── pages/             # Page components
+│   │   ├── About.jsx
+│   │   ├── AdminPanel.jsx
+│   │   ├── Careers.jsx
+│   │   ├── Cart.jsx
+│   │   ├── Checkout.jsx
+│   │   ├── Contact.jsx
+│   │   ├── Dashboard.jsx
+│   │   ├── FAQs.jsx
+│   │   ├── Home.jsx
+│   │   ├── Login.jsx
+│   │   ├── Press.jsx
+│   │   ├── ProductDetails.jsx
+│   │   ├── Register.jsx
+│   │   ├── Returns.jsx
+│   │   ├── Shipping.jsx
+│   │   ├── Shop.jsx
+│   │   ├── SizeGuide.jsx
+│   │   └── Sustainability.jsx
+│   ├── App.jsx            # Main app component
+│   ├── index.css          # Global styles
+│   └── main.jsx           # Entry point
+├── .env                   # Environment variables (NOT in git)
+├── .env.example           # Example env file
+├── .gitignore             # Frontend gitignore
+├── index.html             # HTML entry
+├── package.json           # Dependencies
+├── postcss.config.js      # PostCSS config
+├── tailwind.config.js     # Tailwind config
+├── vercel.json            # Vercel deployment config
+└── vite.config.js         # Vite config
+```
+
+## REMOVED FILES (Cleaned Up)
+
+### From Root:
+- ❌ DEPLOY_BACKEND.bat
+- ❌ DEPLOY_FRONTEND.bat
+- ❌ DEPLOY_EVERYTHING.bat
+- ❌ DEPLOY_NOW.txt
+- ❌ DEPLOY_FINAL.txt
+- ❌ FULL_DEPLOYMENT_GUIDE.txt
+- ❌ NETLIFY_DEPLOY_GUIDE.txt
+- ❌ PROJECT_PROMPT.txt
+- ❌ DEPLOYMENT_GUIDE.txt
+
+### From Frontend:
+- ❌ node_modules/ (reinstall with npm install)
+- ❌ dist/ (build output)
+- ❌ .vite/ (cache)
+- ❌ *.log files
+
+### From Backend:
+- ❌ node_modules/ (reinstall with npm install)
+- ❌ uploads/ (local image storage)
+- ❌ logs/ (log files)
+- ❌ *.log files
+
+## IMPORTANT NOTES
+
+1. **node_modules** - Removed from both, will reinstall with `npm install`
+2. **.env files** - Kept locally but NOT in git (in .gitignore)
+3. **Build files** - Removed, will generate on build
+4. **Log files** - All cleaned up
+
+## To Reinstall Dependencies
+
+```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd frontend
+npm install
+```
+
+## To Run Locally
+
+```bash
+# Backend (Terminal 1)
+cd backend
+npm run dev
+# → http://localhost:5000
+
+# Frontend (Terminal 2)
+cd frontend
+npm run dev
+# → http://localhost:5173
+```
+
+## Clean & Ready for Deployment ✅
+
+- All unnecessary files removed
+- Only essential code files remain
+- Git repository clean
+- Ready to push to GitHub
+- Ready for Render + Vercel deployment

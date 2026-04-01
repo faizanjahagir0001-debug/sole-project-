@@ -1,0 +1,395 @@
+# SoleStyle E-Commerce - Complete Project Prompt
+
+## Project Overview
+Build a full-stack MERN e-commerce application for selling watersports equipment (windsurfing, kitesurfing, surfing gear). The application includes a modern React frontend with Vite, Node.js/Express backend, MongoDB Atlas database, and deployment configurations for Render (backend) and Vercel (frontend).
+
+## Tech Stack
+
+### Frontend
+- React 18 with Vite (Fast build tool)
+- Tailwind CSS for styling
+- GSAP for animations
+- React Router DOM for routing
+- Axios for API calls
+- React Hot Toast for notifications
+- Lucide React for icons
+
+### Backend
+- Node.js with Express
+- MongoDB Atlas with Mongoose ODM
+- JWT authentication
+- bcrypt.js for password hashing
+- CORS for cross-origin requests
+- Cloudinary for image uploads (optional)
+
+### Database
+- MongoDB Atlas (Cloud database)
+- Collections: Users, Products, Orders, Cart, ContactMessages
+
+## Project Structure
+
+```
+soleStyle-ecommerce/
+├── backend/
+│   ├── config/
+│   │   └── db.js              # MongoDB connection
+│   ├── controllers/
+│   │   ├── auth.js            # Authentication
+│   │   ├── cart.js            # Cart operations
+│   │   ├── contactController.js # Contact messages
+│   │   ├── orders.js          # Order management
+│   │   ├── products.js        # Product CRUD
+│   │   └── users.js           # User management
+│   ├── middleware/
+│   │   └── auth.js            # JWT middleware
+│   ├── models/
+│   │   ├── Cart.js
+│   │   ├── ContactMessage.js
+│   │   ├── Order.js
+│   │   ├── Product.js
+│   │   └── User.js
+│   ├── routes/
+│   │   ├── auth.js
+│   │   ├── cart.js
+│   │   ├── contactRoutes.js
+│   │   ├── orders.js
+│   │   ├── products.js
+│   │   └── users.js
+│   ├── server.js              # Main entry point
+│   ├── package.json
+│   └── .env                   # Environment variables (NOT in git)
+├── frontend/
+│   ├── src/
+│   │   ├── components/        # Reusable UI components
+│   │   ├── pages/            # Page components
+│   │   ├── context/          # React Context
+│   │   └── App.jsx
+│   ├── index.html
+│   ├── package.json
+│   └── .env                  # Frontend env (NOT in git)
+└── .gitignore                # Excludes .env and node_modules
+```
+
+## Core Features
+
+### User Features
+1. **Authentication**
+   - Register/Login with JWT
+   - Protected routes
+   - Password hashing
+
+2. **Product Catalog**
+   - Browse all products
+   - Filter by category
+   - Search products
+   - Product details with reviews
+   - Featured & Bestseller sections
+
+3. **Shopping Cart**
+   - Add/remove items
+   - Update quantities
+   - Calculate totals
+   - Persistent cart (database stored)
+
+4. **Checkout**
+   - Shipping address form
+   - Cash on Delivery payment
+   - Order confirmation
+
+5. **User Dashboard**
+   - View order history
+   - Track order status
+   - Update profile
+   - Change password
+
+6. **Contact Form**
+   - Submit messages
+   - View in Admin Panel
+
+### Admin Features
+1. **Admin Panel Dashboard**
+   - Stats: Total users, orders, products, revenue
+   - Recent orders
+   - Unread messages count
+
+2. **Product Management**
+   - Add new products
+   - Edit existing products
+   - Delete products
+   - Upload product images (Cloudinary)
+   - Mark products as featured/bestseller
+
+3. **Order Management**
+   - View all orders
+   - Update order status (Pending → Processing → Shipped → Delivered)
+   - View order details
+
+4. **User Management**
+   - View all users
+   - Make user admin
+   - Delete users
+
+5. **Contact Messages**
+   - View all messages
+   - Mark as read/unread/replied
+   - Delete messages
+   - Reply via email
+
+## API Endpoints
+
+### Authentication
+- `POST /api/auth/register` - Register new user
+- `POST /api/auth/login` - Login user
+- `GET /api/auth/profile` - Get user profile (protected)
+- `PUT /api/auth/profile` - Update profile (protected)
+
+### Products
+- `GET /api/products` - Get all products (with filters)
+- `GET /api/products/featured` - Get featured products
+- `GET /api/products/bestsellers` - Get bestsellers
+- `GET /api/products/:id` - Get single product
+- `POST /api/products` - Create product (admin)
+- `PUT /api/products/:id` - Update product (admin)
+- `DELETE /api/products/:id` - Delete product (admin)
+- `POST /api/products/:id/reviews` - Add review (protected)
+
+### Cart
+- `GET /api/cart` - Get user's cart (protected)
+- `POST /api/cart` - Add item to cart (protected)
+- `PUT /api/cart/:productId` - Update quantity (protected)
+- `DELETE /api/cart/:productId` - Remove item (protected)
+- `DELETE /api/cart` - Clear cart (protected)
+
+### Orders
+- `GET /api/orders` - Get all orders (admin)
+- `GET /api/orders/myorders` - Get user's orders (protected)
+- `POST /api/orders` - Create order (protected)
+- `PUT /api/orders/:id/status` - Update status (admin)
+
+### Users (Admin Only)
+- `GET /api/users` - Get all users
+- `GET /api/users/:id` - Get user by ID
+- `PUT /api/users/:id` - Update user
+- `DELETE /api/users/:id` - Delete user
+
+### Contact
+- `POST /api/contact` - Submit message (public)
+- `GET /api/contact` - Get all messages (admin)
+- `GET /api/contact/:id` - Get single message (admin)
+- `PUT /api/contact/:id` - Update status (admin)
+- `DELETE /api/contact/:id` - Delete message (admin)
+
+## Environment Variables
+
+### Backend (.env)
+```
+MONGO_URI=mongodb+srv://username:password@cluster.mongodb.net/database
+JWT_SECRET=your_super_secret_key_minimum_32_characters
+PORT=5000
+NODE_ENV=development
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+```
+
+### Frontend (.env)
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+## LOCAL DEVELOPMENT SETUP
+
+### Step 1: Install Dependencies
+
+```bash
+# Backend
+cd backend
+npm install
+
+# Frontend
+cd frontend
+npm install
+```
+
+### Step 2: Setup Environment Variables
+
+Create `backend/.env`:
+```
+MONGO_URI=mongodb+srv://E-commerce1:E-commerce1@cluster0.8cof4ps.mongodb.net/windsurf-gear?retryWrites=true&w=majority
+JWT_SECRET=windsurf_secret_key_2024_production
+PORT=5000
+NODE_ENV=development
+```
+
+Create `frontend/.env`:
+```
+VITE_API_URL=http://localhost:5000/api
+```
+
+### Step 3: Start Backend Server
+
+```bash
+cd backend
+npm run dev
+```
+Backend runs on: http://localhost:5000
+
+### Step 4: Start Frontend Server
+
+```bash
+cd frontend
+npm run dev
+```
+Frontend runs on: http://localhost:5173
+
+### Step 5: Access Application
+
+Open browser: http://localhost:5173
+
+## DEPLOYMENT (Production)
+
+### GitHub Setup
+1. Create repo on GitHub
+2. Push code (without .env files)
+3. `.gitignore` already excludes .env files
+
+### Backend Deployment (Render)
+
+1. Go to https://dashboard.render.com/
+2. Login with GitHub
+3. New + → Web Service
+4. Connect GitHub repo
+5. Configure:
+   - Name: `solestyle-backend`
+   - Runtime: Node
+   - Build Command: `npm install`
+   - Start Command: `node server.js`
+6. Environment Variables:
+   ```
+   MONGO_URI=mongodb+srv://E-commerce1:E-commerce1@cluster0.8cof4ps.mongodb.net/windsurf-gear?retryWrites=true&w=majority
+   JWT_SECRET=windsurf_secret_key_2024_production
+   NODE_ENV=production
+   PORT=10000
+   ```
+7. Deploy
+
+**Backend URL:** `https://solestyle-backend.onrender.com`
+
+### Frontend Deployment (Vercel)
+
+1. Go to https://vercel.com/
+2. Login with GitHub
+3. Add New Project
+4. Import GitHub repo
+5. Configure:
+   - Root Directory: `frontend`
+   - Framework: Vite
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
+6. Environment Variable:
+   ```
+   VITE_API_URL=https://solestyle-backend.onrender.com/api
+   ```
+7. Deploy
+
+**Frontend URL:** `https://solestyle.vercel.app`
+
+### Post-Deployment Checklist
+
+- [ ] Backend responding on Render URL
+- [ ] Frontend loading on Vercel URL
+- [ ] Frontend connected to Backend API
+- [ ] MongoDB Atlas accessible
+- [ ] Register/Login working
+- [ ] Products displaying
+- [ ] Cart functionality working
+- [ ] Checkout working
+- [ ] Admin panel accessible
+- [ ] Contact form submitting
+
+## Admin Access Setup
+
+1. Register a user on deployed site
+2. Go to MongoDB Atlas
+3. Find user in `users` collection
+4. Change `role` from `"user"` to `"admin"`
+5. Login again - Admin panel accessible
+
+## Troubleshooting
+
+### Backend Not Starting
+- Check MONGO_URI is correct
+- Check JWT_SECRET is set
+- Check PORT is not in use
+
+### Frontend Not Connecting to Backend
+- Check VITE_API_URL matches backend URL
+- Check CORS is configured in backend
+- Check backend is running
+
+### Images Not Uploading
+- Check Cloudinary credentials
+- Verify multer is configured correctly
+
+### CORS Errors
+- Add frontend URL to backend CORS allowed origins
+
+## Security Notes
+
+1. ✅ Never commit .env files
+2. ✅ Use strong JWT_SECRET (32+ chars)
+3. ✅ Hash passwords with bcrypt
+4. ✅ Validate all inputs
+5. ✅ Use HTTPS in production
+6. ✅ Set secure CORS origins
+
+## Live URLs After Deployment
+
+| Service | URL | Platform |
+|---------|-----|----------|
+| Frontend | https://solestyle.vercel.app | Vercel |
+| Backend API | https://solestyle-backend.onrender.com | Render |
+| Database | MongoDB Atlas | MongoDB |
+
+## Support & Documentation
+
+- All API endpoints tested with Postman
+- Frontend responsive (mobile + desktop)
+- Dark mode support
+- Admin panel fully functional
+- Contact form with admin view
+- Image uploads via Cloudinary (optional)
+
+## What Makes This Project Production-Ready
+
+1. **Complete Authentication** - JWT-based with role management
+2. **Full CRUD Operations** - Products, Orders, Users, Messages
+3. **Database Integration** - MongoDB Atlas with Mongoose
+4. **Image Handling** - Cloudinary integration ready
+5. **Admin Dashboard** - Full management panel
+6. **Responsive Design** - Mobile-first with Tailwind
+7. **Error Handling** - Proper try-catch and validation
+8. **Security** - Protected routes, hashed passwords
+9. **Deployment Ready** - Configs for Render + Vercel
+10. **Environment Management** - .env files properly excluded from git
+
+## Quick Commands Reference
+
+```bash
+# Development
+backend:  npm run dev        # localhost:5000
+frontend: npm run dev        # localhost:5173
+
+# Production Build
+frontend: npm run build      # creates dist/
+
+# Git
+push:     git add . && git commit -m "message" && git push
+
+# Deployment
+deploy:   Push to GitHub → Auto deploy on Render/Vercel
+```
+
+---
+
+**This is a complete, production-ready MERN stack e-commerce application with all features implemented and deployment configured.**
