@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import axios from 'axios';
+import api from '../config/api';
 
 const AuthContext = createContext();
 
@@ -20,9 +20,7 @@ export const AuthProvider = ({ children }) => {
 
   const fetchProfile = async (token) => {
     try {
-      const response = await axios.get('/api/auth/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await api.get('/api/auth/profile');
       setUser({ ...response.data, token });
     } catch (error) {
       localStorage.removeItem('token');
@@ -32,7 +30,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const login = async (email, password) => {
-    const response = await axios.post('/api/auth/login', { email, password });
+    const response = await api.post('/api/auth/login', { email, password });
     const { token, ...userData } = response.data;
     localStorage.setItem('token', token);
     setUser({ ...userData, token });
@@ -40,7 +38,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   const register = async (name, email, password) => {
-    const response = await axios.post('/api/auth/register', { name, email, password });
+    const response = await api.post('/api/auth/register', { name, email, password });
     const { token, ...userData } = response.data;
     localStorage.setItem('token', token);
     setUser({ ...userData, token });
@@ -53,11 +51,8 @@ export const AuthProvider = ({ children }) => {
   };
 
   const updateProfile = async (profileData) => {
-    const token = localStorage.getItem('token');
-    const response = await axios.put('/api/auth/profile', profileData, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    setUser({ ...response.data, token });
+    const response = await api.put('/api/auth/profile', profileData);
+    setUser({ ...response.data, token: localStorage.getItem('token') });
     return response.data;
   };
 

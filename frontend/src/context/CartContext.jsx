@@ -1,5 +1,5 @@
 import { useState, useEffect, createContext, useContext } from 'react';
-import axios from 'axios';
+import api from '../config/api';
 import { useAuth } from './AuthContext';
 import toast from 'react-hot-toast';
 
@@ -28,7 +28,7 @@ export const CartProvider = ({ children }) => {
   const fetchCart = async () => {
     try {
       setLoading(true);
-      const response = await axios.get('/api/cart', { headers: getAuthHeaders() });
+      const response = await api.get('/api/cart');
       setCart(response.data);
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -43,10 +43,7 @@ export const CartProvider = ({ children }) => {
       return;
     }
     try {
-      const response = await axios.post('/api/cart', 
-        { productId, quantity }, 
-        { headers: getAuthHeaders() }
-      );
+      const response = await api.post('/api/cart', { productId, quantity });
       setCart(response.data);
       toast.success('Item added to cart');
     } catch (error) {
