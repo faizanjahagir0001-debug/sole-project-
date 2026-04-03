@@ -3,7 +3,7 @@ import { Routes, Route, Link, useLocation, useNavigate } from 'react-router-dom'
 import axios from 'axios';
 import {
   LayoutDashboard, ShoppingBag, Users, Package, DollarSign, Plus, Edit, Trash2,
-  Search, Filter, ChevronLeft, ChevronRight, Star, Sparkles, X, Check, Menu, LogOut, Eye, Mail
+  Search, Filter, ChevronLeft, ChevronRight, Star, Sparkles, X, Check, Menu, LogOut, Eye, Mail, BarChart3
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 
@@ -14,6 +14,7 @@ const AdminPanel = () => {
 
   const menuItems = [
     { path: '/admin', label: 'Dashboard', icon: LayoutDashboard },
+    { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     { path: '/admin/products', label: 'Products', icon: Package },
     { path: '/admin/orders', label: 'Orders', icon: ShoppingBag },
     { path: '/admin/users', label: 'Users', icon: Users },
@@ -91,6 +92,7 @@ const AdminPanel = () => {
         <main className="flex-1 overflow-y-auto p-3 sm:p-4 lg:p-8">
           <Routes>
             <Route path="/" element={<AdminDashboard />} />
+            <Route path="/analytics" element={<AdminAnalytics />} />
             <Route path="/products" element={<AdminProducts />} />
             <Route path="/orders" element={<AdminOrders />} />
             <Route path="/users" element={<AdminUsers />} />
@@ -1395,6 +1397,210 @@ const AdminContactMessages = () => {
           </div>
         </div>
       )}
+    </div>
+  );
+};
+
+// Analytics Component
+const AdminAnalytics = () => {
+  const [overview, setOverview] = useState(null);
+  const [salesData, setSalesData] = useState([]);
+  const [topProducts, setTopProducts] = useState([]);
+  const [categoryData, setCategoryData] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAnalytics();
+  }, []);
+
+  const fetchAnalytics = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const headers = { Authorization: `Bearer ${token}` };
+      
+      const [overviewRes, salesRes, productsRes, categoryRes] = await Promise.all([
+        axios.get('/api/analytics/overview', { headers }),
+        axios.get('/api/analytics/sales-chart', { headers }),
+        axios.get('/api/analytics/top-products', { headers }),
+        axios.get('/api/analytics/category-performance', { headers }),
+      ]);
+
+      setOverview(overviewRes.data);
+      setSalesData(salesRes.data);
+      setTopProducts(productsRes.data);
+      setCategoryData(categoryRes.data);
+    } catch (error) {
+      toast.error('Failed to load analytics');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Simple bar chart component
+  const SimpleBarChart = ({ data, labelKey, valueKey, color = 'bg-primary-500' }) => {
+    const maxValue = Math.max(...data.map(d => d[valueKey]), 1);
+    return (
+      <div className="space-y-2">
+        {data.map((item, index) => (
+          <div key={index} className="flex items-center gap-3">
+            <div className="w-24 text-xs text-gray-600 dark:text-gray-400 truncate">{item[labelKey]}</div>
+            <div className="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-6 overflow-hidden">
+              <div
+                className={`${color} h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2`}
+                style={{ width: `${(item[valueKey] / maxValue) * 100}%` }}
+              >
+                <span className="text-xs text-white font-medium">{item[valueKey]}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  // Simple line chart for sales
+  const SimpleLineChart = ({ data }) => {
+    if (data.length === 0) return <p className="text-gray-500 text-center py-8">No data available</p>;
+    
+    const maxSales = Math.max(...data.map(d => d.sales), 1);
+    const points = data.map((d, i) => ({
+      x: (i / (data.length - 1 || 1)) * 100,
+      y: 100 - ((d.sales / maxSales) * 80 + 10),
+      value: d.sales,
+      date: d.date
+    }));
+
+    const pathD = points.length > 0 
+      ? `M ${points[0].x} ${points[0].y} ` + points.slice(1).map(p => `L ${p.x} ${p.y}`).join(' ')
+      : '';
+
+    return (
+      <div className="relative h-48 w-full">
+        <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="lineGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="#3b82f6" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          {points.length > 1 && (
+            <>
+              <path
+                d={`${pathD} L 100 100 L 0 100 Z`}
+                fill="url(#lineGradient)"
+              />
+              <path
+                d={pathD}
+                fill="none"
+                stroke="#3b82f6"
+                strokeWidth="0.5"
+                vectorEffect="non-scaling-stroke"
+              />
+            </>
+          )}
+          {points.map((p, i) => (
+            <circle
+              key={i}
+              cx={p.x}
+              cy={p.y}
+              r="1"
+              fill="#3b82f6"
+              className="hover:r-2 transition-all"
+            />
+          ))}
+        </svg>
+        <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-500 px-2">
+          {data.length > 0 && (
+            <>
+              <span>{data[0]?.date?.slice(5)}</span>
+              <span>{data[Math.floor(data.length / 2)]?.date?.slice(5)}</span>
+              <span>{data[data.length - 1]?.date?.slice(5)}</span>
+            </>
+          )}
+        </div>
+      </div>
+    );
+  };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Analytics Dashboard</h2>
+      
+      {/* Overview Stats */}
+      {overview && (
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Total Revenue</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-white">${overview.totalRevenue?.toFixed(2)}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">30 Day Revenue</p>
+            <p className="text-2xl font-bold text-green-600">${overview.monthlyRevenue?.toFixed(2)}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Weekly Orders</p>
+            <p className="text-2xl font-bold text-blue-600">{overview.weeklyOrders}</p>
+          </div>
+          <div className="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm">
+            <p className="text-gray-500 dark:text-gray-400 text-sm">Total Users</p>
+            <p className="text-2xl font-bold text-purple-600">{overview.totalUsers}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Charts Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Sales Chart */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Sales Trend (30 Days)</h3>
+          <SimpleLineChart data={salesData} />
+        </div>
+
+        {/* Order Status */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Order Status</h3>
+          {overview?.statusBreakdown && (
+            <div className="grid grid-cols-2 gap-4">
+              {Object.entries(overview.statusBreakdown).map(([status, count]) => (
+                <div key={status} className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                  <span className="capitalize text-gray-700 dark:text-gray-300">{status}</span>
+                  <span className="font-bold text-gray-900 dark:text-white">{count}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Top Products */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Top Selling Products</h3>
+          <SimpleBarChart 
+            data={topProducts.slice(0, 5)} 
+            labelKey="name" 
+            valueKey="totalSold"
+            color="bg-green-500"
+          />
+        </div>
+
+        {/* Category Performance */}
+        <div className="bg-white dark:bg-gray-800 rounded-xl p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Category Performance</h3>
+          <SimpleBarChart 
+            data={categoryData} 
+            labelKey="category" 
+            valueKey="revenue"
+            color="bg-purple-500"
+          />
+        </div>
+      </div>
     </div>
   );
 };

@@ -26,3 +26,7 @@ coverage/
 # Misc
 .DS_Store
 Thumbs.db
+
+# Build files
+dist/
+dist-ssr/

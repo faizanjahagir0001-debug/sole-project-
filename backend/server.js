@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import { createServer } from 'net';
 import connectDB from './config/db.js';
 import authRoutes from './routes/auth.js';
 import productRoutes from './routes/products.js';
@@ -9,6 +10,7 @@ import cartRoutes from './routes/cart.js';
 import userRoutes from './routes/users.js';
 import uploadRoutes from './routes/upload.js';
 import contactRoutes from './routes/contactRoutes.js';
+import analyticsRoutes from './routes/analytics.js';
 
 dotenv.config();
 
@@ -30,6 +32,7 @@ app.use('/api/cart', cartRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 // Test route
 app.get('/', (req, res) => {
@@ -44,6 +47,47 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// Function to find available port
+const findAvailablePort = (startPort) => {
+  return new Promise((resolve, reject) => {
+    const server = createServer();
+    server.unref();
+    server.on('error', (err) => {
+      if (err.code === 'EADDRINUSE') {
+        resolve(false);
+      } else {
+        reject(err);
+      }
+    });
+    server.listen(startPort, () => {
+      server.close();
+      resolve(true);
+    });
+  });
+};
+
+// Start server with available port
+const startServer = async () => {
+  let portToUse = PORT;
+  const isPortAvailable = await findAvailablePort(PORT);
+  
+  if (!isPortAvailable) {
+    console.log(`⚠️  Port ${PORT} is already in use. Trying next available port...`);
+    // Try ports 5001-5010
+    for (let i = 5001; i <= 5010; i++) {
+      const available = await findAvailablePort(i);
+      if (available) {
+        portToUse = i;
+        console.log(`✅ Port ${i} is available!`);
+        break;
+      }
+    }
+  }
+  
+  app.listen(portToUse, () => {
+    console.log(`✅ Server running on port ${portToUse}`);
+    console.log(`🌐 API URL: http://localhost:${portToUse}`);
+  });
+};
+
+startServer();
